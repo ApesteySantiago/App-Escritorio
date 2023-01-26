@@ -24,4 +24,4 @@ if ((a % 2) == 0) & ((b % 2) == 0) & ((c % 2) == 0):
     print("Todos los parametros ingresados son multiplos de dos.")
 
 else:
-    print("Uno de los parametros ingresados no es multiplos de dos")
+    print("Uno de los parametros ingresados no son multiplos de dos")
