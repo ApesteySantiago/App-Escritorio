@@ -20,7 +20,7 @@ for e in range(0, cantidad_elementos):
     print(mi_dic)
     mi_diccionario[e] = b
     mi_diccionario2[e] = cond
-    mi_diccionario3[e] = "El número " + str(b) + "es: " + cond
+    mi_diccionario3[e] = "El número " + str(b) + " es: " + cond
 
 print(mi_diccionario)
 print(mi_diccionario2)
