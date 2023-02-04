@@ -3,6 +3,7 @@ enteros --> inmutables
 strings --> inmutables
 listas  --> mutables
 diccionarios --> mutables
+
 """
 
 persona1 = ["Pepe Pedro", "Perez", 4, "12345678", "30000"]
