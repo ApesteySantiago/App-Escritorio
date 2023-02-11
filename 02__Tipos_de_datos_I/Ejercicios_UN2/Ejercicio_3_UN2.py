@@ -8,3 +8,9 @@ Tome dos valores por consola, y guarde en una lista:
 Presente el resultado en la terminal del editor.
 
 """
+
+lista_suma = [5, 6, 0]
+
+lista_suma[2] = sum(lista_suma[0:2])
+
+print(f"La sumatoria de {lista_suma[0]} + {lista_suma[1]} = {lista_suma[2]}")

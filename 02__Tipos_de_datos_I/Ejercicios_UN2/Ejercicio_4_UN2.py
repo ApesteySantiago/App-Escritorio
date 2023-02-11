@@ -7,3 +7,11 @@ el mensaje "Ya está en edad de jubilarse." en caso contrario que
 presente "Aún está en edad de trabajar.".
 
 """
+
+edad = int(input("Ingrese su edad: "))
+
+if edad >= 65:
+    print("Ya está en edad de jubilarse.")
+
+else:
+    print("Aún está en edad de trabajar.")
