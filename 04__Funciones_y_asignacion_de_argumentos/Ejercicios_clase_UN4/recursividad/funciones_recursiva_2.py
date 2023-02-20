@@ -11,5 +11,7 @@ def secundaria(param):
 print(mi_suma([1.1, 2.2, 3.3, 4.4]))
 
 """
- 
+n!
+
+n * n-1 * n-2 * ...... *1
 """
