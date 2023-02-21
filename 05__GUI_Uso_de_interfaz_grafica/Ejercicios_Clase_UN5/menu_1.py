@@ -23,7 +23,7 @@ menu_edicion.add_separator()
 menu_edicion.add_command(label="Salir", command=master.quit)
 menubar.add_cascade(label="Editar", menu=menu_edicion)
 
-submenu = Menu(menu_edicion, tearoff=True)
+submenu = Menu(menu_edicion, tearoff=False)  # True False
 submenu.add_command(label="Editar color", command=hola)
 submenu.add_command(label="Rotar", command=hola)
 menu_edicion.add_cascade(label="Otros", menu=submenu)
