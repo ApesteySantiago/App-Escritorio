@@ -29,16 +29,6 @@ def funcion_g():
     )
 
 
-"""
-I003
-{'text': '3', 'image': '', 'values': ['gsdfgsdfg', 'gsdfgsdfg'], 'open': 0, 'tags': ''}
-
-A B M C    (CRUD)
-
-
-"""
-
-
 def funcion_f():
     global mi_id
     item = tree.focus()
