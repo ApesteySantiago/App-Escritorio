@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, Menu, END, Entry
+from tkinter import ttk, Menu, END, Entry, StringVar, IntVar, DoubleVar
 import sqlite3
 
 main = tk.Tk()
@@ -11,6 +11,7 @@ main = tk.Tk()
 fondo0 = "#242424"
 fondo1 = "#2b2b2b"
 botones = "#1f6aa5"
+fondo_campos = "#343638"
 
 # ---------------------
 #      Config App
@@ -67,18 +68,17 @@ conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
 c = conn.cursor()
 
 # Creamos la tabla
-'''
+
 c.execute(
-    """CREATE TABLE productos (
-        marca text,
-        medida text,
-        precio text,
-        stock text,
-        costo text,
-        descripcion text
+    """CREATE TABLE if not exists productos (
+        marca TEXT,
+        medida REAL,
+        precio REAL,
+        stock INTEGER,
+        costo REAL,
+        descripcion TEXT
         )"""
 )
-'''
 
 
 def submit():
@@ -137,7 +137,13 @@ nmarca = ttk.Label(
 )
 nmarca.place(x=230, y=85)
 
-marca = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+marca = tk.Entry(
+    bg=fondo_campos,
+    borderwidth=2,
+    fg="white",
+    justify="center",
+    textvariable=StringVar(),
+)
 marca.place(x=165, y=110, width=200, height=25)
 
 ndescripcion = ttk.Label(
@@ -149,7 +155,13 @@ ndescripcion = ttk.Label(
 )
 ndescripcion.place(x=205, y=140)
 
-descripcion = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+descripcion = tk.Entry(
+    bg=fondo_campos,
+    borderwidth=2,
+    fg="white",
+    justify="center",
+    textvariable=StringVar(),
+)
 descripcion.place(x=165, y=165, width=200, height=25)
 
 nmedida = ttk.Label(
@@ -161,7 +173,13 @@ nmedida = ttk.Label(
 )
 nmedida.place(x=230, y=195)
 
-medida = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+medida = tk.Entry(
+    bg=fondo_campos,
+    borderwidth=2,
+    fg="white",
+    justify="center",
+    textvariable=DoubleVar(),
+)
 medida.place(x=165, y=220, width=200, height=25)
 
 nprecio = ttk.Label(
@@ -173,7 +191,13 @@ nprecio = ttk.Label(
 )
 nprecio.place(x=528, y=85)
 
-precio = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+precio = tk.Entry(
+    bg=fondo_campos,
+    borderwidth=2,
+    fg="white",
+    justify="center",
+    textvariable=DoubleVar(),
+)
 precio.place(x=460, y=110, width=200, height=25)
 
 nstock = ttk.Label(
@@ -185,7 +209,9 @@ nstock = ttk.Label(
 )
 nstock.place(x=530, y=140)
 
-stock = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+stock = tk.Entry(
+    bg=fondo_campos, borderwidth=2, fg="white", justify="center", textvariable=IntVar()
+)
 stock.place(x=460, y=165, width=200, height=25)
 
 ncosto = ttk.Label(
@@ -197,7 +223,13 @@ ncosto = ttk.Label(
 )
 ncosto.place(x=530, y=195)
 
-costo = tk.Entry(bg="#343638", borderwidth=2, fg="white", justify="center")
+costo = tk.Entry(
+    bg=fondo_campos,
+    borderwidth=2,
+    fg="white",
+    justify="center",
+    textvariable=DoubleVar(),
+)
 costo.place(x=460, y=220, width=200, height=25)
 
 # ---------------------
