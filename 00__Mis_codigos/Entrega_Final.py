@@ -8,6 +8,9 @@ main = tk.Tk()
 #       Colores
 # ------------------
 
+global count
+count = 0
+
 fondo0 = "#242424"
 fondo1 = "#2b2b2b"
 botones = "#1f6aa5"
@@ -71,6 +74,7 @@ c = conn.cursor()
 
 c.execute(
     """CREATE TABLE if not exists productos (
+        id INTEGER,
         marca TEXT,
         medida REAL,
         precio REAL,
@@ -80,19 +84,29 @@ c.execute(
         )"""
 )
 
+# Pasar cambios
+conn.commit()
+
+# Cerrar coneccion
+conn.close()
+
+# Definiciones
+
 
 def submit():
-
+    global count
     # Creacion de database o conectar a una
     conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
 
     c = conn.cursor()
 
     # Insertar en la tabla
+    count += 1
 
     c.execute(
-        "INSERT INTO productos VALUES(:marca, :medida, :precio, :stock, :costo, :descripcion)",
+        "INSERT INTO productos VALUES(:id, :marca, :medida, :precio, :stock, :costo, :descripcion)",
         {
+            "id": count,
             "marca": marca.get(),
             "medida": medida.get(),
             "precio": precio.get(),
@@ -100,6 +114,26 @@ def submit():
             "costo": costo.get(),
             "descripcion": descripcion.get(),
         },
+    )
+
+    u = c.execute(
+        "SELECT * FROM productos WHERE ROWID IN (SELECT max(ROWID) FROM productos)"
+    )
+    ultimo = u.fetchone()
+
+    lista.insert(
+        "",
+        "end",
+        text=str(ultimo[0]),
+        values=(
+            ultimo[1],
+            ultimo[2],
+            ultimo[3],
+            ultimo[4],
+            ultimo[5],
+            ultimo[6],
+        ),
+        tags=(""),
     )
 
     # Pasar cambios
@@ -117,11 +151,78 @@ def submit():
     descripcion.delete(0, END)
 
 
-# Pasar cambios
-conn.commit()
+def delete():
 
-# Cerrar coneccion
-conn.close()
+    item = lista.focus()
+    lista_nueva = lista.item(item)
+
+    print(lista_nueva)
+
+    id = lista_nueva["text"]
+
+    # Creacion de database o conectar a una
+    conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
+
+    c = conn.cursor()
+    c.execute("DELETE FROM productos WHERE id = ?;", (id,))
+
+    lista.delete(item)
+
+    # Pasar cambios
+    conn.commit()
+
+    # Cerrar coneccion
+    conn.close()
+
+
+def modify():
+    item = lista.focus()
+    lista_nueva = lista.item(item)
+    lista_nueva_1 = lista_nueva["values"]
+
+    # Llenar los campos
+    marca.insert(0, lista_nueva_1[0])
+    medida.insert(0, lista_nueva_1[1])
+    precio.insert(0, lista_nueva_1[2])
+    stock.insert(0, lista_nueva_1[3])
+    costo.insert(0, lista_nueva_1[4])
+    descripcion.insert(0, lista_nueva_1[5])
+
+
+def view():
+
+    global count
+
+    # Creacion de database o conectar a una
+    conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
+
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM productos")
+    productos = c.fetchall()
+
+    for producto in productos:
+        count += 1
+        lista.insert(
+            "",
+            "end",
+            text=str(count),
+            values=(
+                producto[0],
+                producto[1],
+                producto[2],
+                producto[3],
+                producto[4],
+                producto[5],
+            ),
+            tags=(""),
+        )
+
+    # Pasar cambios
+    conn.commit()
+
+    # Cerrar coneccion
+    conn.close()
 
 
 # ---------------------
@@ -236,11 +337,15 @@ costo.place(x=460, y=220, width=200, height=25)
 #       Botones
 # ---------------------
 
-boton_modificar = tk.Button(main, text="Modificar", background=botones, bd=3)
+boton_modificar = tk.Button(
+    main, text="Modificar", background=botones, bd=3, command=modify
+)
 boton_modificar.place(x=80, y=280, width=125, height=30)
 
 
-boton_eliminar = tk.Button(main, text="Eliminar", background="#fc3434", bd=3)
+boton_eliminar = tk.Button(
+    main, text="Eliminar", background="#fc3434", bd=3, command=delete
+)
 boton_eliminar.place(x=215, y=280, width=125, height=30)
 
 
@@ -249,11 +354,9 @@ boton_aceptar = tk.Button(
 )
 boton_aceptar.place(x=600, y=280, width=125, height=30)
 
-
 # ---------------------
 #         Lista
 # ---------------------
-
 
 lista = ttk.Treeview(
     main, columns=("Marca", "Medida", "Precio", "Stock", "Costo", "Descripcion")
@@ -265,7 +368,6 @@ lista.heading("Precio", text="Precio")
 lista.heading("Stock", text="Stock")
 lista.heading("Costo", text="Costo")
 lista.heading("Descripcion", text="Descripcion")
-
 
 lista.column("#0", width=35, minwidth=35)
 lista.column("Marca", width=100, minwidth=100)
@@ -281,6 +383,8 @@ lista.place(x=80, y=325)
 self.scrollbar_vertical = ttk.Scrollbar(self.framebot, orient='vertical', command = self.tabla.yview)
     self.scrollbar_vertical.grid(row=1,column=5, sticky=N+S)
 """
+
+view()
 
 
 main.mainloop()
