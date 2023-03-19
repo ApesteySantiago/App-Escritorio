@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, Menu, END, Entry, StringVar, IntVar, DoubleVar
+from tkinter import ttk, Menu, END, StringVar, IntVar, DoubleVar
 import sqlite3
 
 main = tk.Tk()
@@ -8,7 +8,7 @@ main = tk.Tk()
 #       Colores
 # ------------------
 
-global count
+global count, id
 count = 0
 
 fondo0 = "#242424"
@@ -61,9 +61,9 @@ titulo.grid(row=0, column=0, sticky="n", padx=50, pady=15)
 segundo_fondo = tk.Frame(main, width=700, height=500, background=fondo1)
 segundo_fondo.grid(row=1, column=0, sticky="n", padx=50)
 
-# ---------------------
-#       Databases
-# ---------------------
+# --------------------------------
+#       Databases y Funciones
+# --------------------------------
 
 # Creacion de database o conectar a una
 conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
@@ -90,7 +90,10 @@ conn.commit()
 # Cerrar coneccion
 conn.close()
 
-# Definiciones
+
+# ---------------
+#    Funciones
+# ---------------
 
 
 def submit():
@@ -124,8 +127,8 @@ def submit():
     lista.insert(
         "",
         "end",
-        text=str(ultimo[0]),
         values=(
+            ultimo[0],
             ultimo[1],
             ultimo[2],
             ultimo[3],
@@ -175,23 +178,87 @@ def delete():
     conn.close()
 
 
-def modify():
+def select():
+    global id
+
     item = lista.focus()
     lista_nueva = lista.item(item)
     lista_nueva_1 = lista_nueva["values"]
+    id = lista_nueva_1[0]
+
+    # Limpiar los campos
+    marca.delete(0, END)
+    medida.delete(0, END)
+    precio.delete(0, END)
+    stock.delete(0, END)
+    costo.delete(0, END)
+    descripcion.delete(0, END)
 
     # Llenar los campos
-    marca.insert(0, lista_nueva_1[0])
-    medida.insert(0, lista_nueva_1[1])
-    precio.insert(0, lista_nueva_1[2])
-    stock.insert(0, lista_nueva_1[3])
-    costo.insert(0, lista_nueva_1[4])
-    descripcion.insert(0, lista_nueva_1[5])
+    marca.insert(0, lista_nueva_1[1])
+    medida.insert(0, lista_nueva_1[2])
+    precio.insert(0, lista_nueva_1[3])
+    stock.insert(0, lista_nueva_1[4])
+    costo.insert(0, lista_nueva_1[5])
+    descripcion.insert(0, lista_nueva_1[6])
+    return
+
+
+def modify():
+    global id
+
+    # Creacion de database o conectar a una
+    conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
+
+    c = conn.cursor()
+
+    c.execute(
+        "UPDATE productos SET id=?, marca= ?, medida=?, precio=?, stock=?, costo=?, descripcion=? WHERE ID="
+        + str(id),
+        (
+            id,
+            marca.get(),
+            medida.get(),
+            precio.get(),
+            stock.get(),
+            costo.get(),
+            descripcion.get(),
+        ),
+    )
+
+    # Limpiar Treeview
+
+    lista.delete(*lista.get_children())
+
+    # Pasar la lista
+
+    c.execute("SELECT * FROM productos")
+    productos = c.fetchall()
+
+    for producto in productos:
+        lista.insert(
+            "",
+            "end",
+            values=(
+                producto[0],
+                producto[1],
+                producto[2],
+                producto[3],
+                producto[4],
+                producto[5],
+                producto[6],
+            ),
+            tags=(""),
+        )
+
+    # Pasar cambios
+    conn.commit()
+
+    # Cerrar coneccion
+    conn.close()
 
 
 def view():
-
-    global count
 
     # Creacion de database o conectar a una
     conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
@@ -202,11 +269,9 @@ def view():
     productos = c.fetchall()
 
     for producto in productos:
-        count += 1
         lista.insert(
             "",
             "end",
-            text=str(count),
             values=(
                 producto[0],
                 producto[1],
@@ -214,6 +279,7 @@ def view():
                 producto[3],
                 producto[4],
                 producto[5],
+                producto[6],
             ),
             tags=(""),
         )
@@ -337,16 +403,22 @@ costo.place(x=460, y=220, width=200, height=25)
 #       Botones
 # ---------------------
 
+boton_seleccionar = tk.Button(
+    main, text="Seleccionar", background="#FFF0C9", bd=3, command=select
+)
+boton_seleccionar.place(x=80, y=280, width=125, height=30)
+
+
 boton_modificar = tk.Button(
     main, text="Modificar", background=botones, bd=3, command=modify
 )
-boton_modificar.place(x=80, y=280, width=125, height=30)
+boton_modificar.place(x=215, y=280, width=125, height=30)
 
 
 boton_eliminar = tk.Button(
     main, text="Eliminar", background="#fc3434", bd=3, command=delete
 )
-boton_eliminar.place(x=215, y=280, width=125, height=30)
+boton_eliminar.place(x=465, y=280, width=125, height=30)
 
 
 boton_aceptar = tk.Button(
@@ -359,9 +431,10 @@ boton_aceptar.place(x=600, y=280, width=125, height=30)
 # ---------------------
 
 lista = ttk.Treeview(
-    main, columns=("Marca", "Medida", "Precio", "Stock", "Costo", "Descripcion")
+    main, columns=("Id", "Marca", "Medida", "Precio", "Stock", "Costo", "Descripcion")
 )
-lista.heading("#0", text="Id")
+lista.heading("#0")
+lista.heading("Id", text="Id")
 lista.heading("Marca", text="Marca")
 lista.heading("Medida", text="Medida")
 lista.heading("Precio", text="Precio")
@@ -369,13 +442,14 @@ lista.heading("Stock", text="Stock")
 lista.heading("Costo", text="Costo")
 lista.heading("Descripcion", text="Descripcion")
 
-lista.column("#0", width=35, minwidth=35)
-lista.column("Marca", width=100, minwidth=100)
-lista.column("Medida", width=80, minwidth=80)
-lista.column("Precio", width=90, minwidth=90)
-lista.column("Stock", width=90, minwidth=90)
-lista.column("Costo", width=80, minwidth=80)
-lista.column("Descripcion", width=168, minwidth=168)
+lista.column("#0", width=0, minwidth=0, anchor="center")
+lista.column("Id", width=35, minwidth=35, anchor="center")
+lista.column("Marca", width=100, minwidth=100, anchor="center")
+lista.column("Medida", width=80, minwidth=80, anchor="center")
+lista.column("Precio", width=90, minwidth=90, anchor="center")
+lista.column("Stock", width=90, minwidth=90, anchor="center")
+lista.column("Costo", width=80, minwidth=80, anchor="center")
+lista.column("Descripcion", width=168, minwidth=168, anchor="center")
 
 lista.place(x=80, y=325)
 
