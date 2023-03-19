@@ -158,10 +158,8 @@ def delete():
 
     item = lista.focus()
     lista_nueva = lista.item(item)
-
-    print(lista_nueva)
-
-    id = lista_nueva["text"]
+    lista_nueva_1 = lista_nueva["values"]
+    id = lista_nueva_1[0]
 
     # Creacion de database o conectar a una
     conn = sqlite3.connect("00__Mis_codigos/listado_productos.db")
