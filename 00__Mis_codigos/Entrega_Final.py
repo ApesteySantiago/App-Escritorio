@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk, Menu, END, StringVar, IntVar, DoubleVar
+from tkinter.messagebox import *
 import sqlite3
+import re
 
 main = tk.Tk()
 
@@ -103,41 +105,51 @@ def submit():
 
     c = conn.cursor()
 
-    # Insertar en la tabla
-    count += 1
+    val_marca = marca.get()
 
-    c.execute(
-        "INSERT INTO productos VALUES(:id, :marca, :medida, :precio, :stock, :costo, :descripcion)",
-        {
-            "id": count,
-            "marca": marca.get(),
-            "medida": medida.get(),
-            "precio": precio.get(),
-            "stock": stock.get(),
-            "costo": costo.get(),
-            "descripcion": descripcion.get(),
-        },
-    )
+    patron_alfanumerico = re.compile("[a-zA-Z0-9áéíóúÁÉÍÓÚ]*$")
 
-    u = c.execute(
-        "SELECT * FROM productos WHERE ROWID IN (SELECT max(ROWID) FROM productos)"
-    )
-    ultimo = u.fetchone()
+    if re.match(patron_alfanumerico, val_marca):
 
-    lista.insert(
-        "",
-        "end",
-        values=(
-            ultimo[0],
-            ultimo[1],
-            ultimo[2],
-            ultimo[3],
-            ultimo[4],
-            ultimo[5],
-            ultimo[6],
-        ),
-        tags=(""),
-    )
+        count += 1
+
+        c.execute(
+            "INSERT INTO productos VALUES(:id, :marca, :medida, :precio, :stock, :costo, :descripcion)",
+            {
+                "id": count,
+                "marca": marca.get(),
+                "medida": medida.get(),
+                "precio": precio.get(),
+                "stock": stock.get(),
+                "costo": costo.get(),
+                "descripcion": descripcion.get(),
+            },
+        )
+
+        u = c.execute(
+            "SELECT * FROM productos WHERE ROWID IN (SELECT max(ROWID) FROM productos)"
+        )
+        ultimo = u.fetchone()
+
+        lista.insert(
+            "",
+            "end",
+            values=(
+                ultimo[0],
+                ultimo[1],
+                ultimo[2],
+                ultimo[3],
+                ultimo[4],
+                ultimo[5],
+                ultimo[6],
+            ),
+            tags=(""),
+        )
+    else:
+        showerror(
+            "Error",
+            "El campo 'Marca' solo puede contener caracteres alfanumericos.",
+        )
 
     # Pasar cambios
     conn.commit()
